@@ -20,8 +20,8 @@ class Compressor extends Component
         $config = ConfigHelper::getParams($condition);
 
         if ($path) {
-            if (file_exists($this->pathHelper->filePathToSet)) {
-                return $this->pathHelper->returnPath;
+            if (file_exists($pathHelper->filePathToSet)) {
+                return $pathHelper->returnPath;
             }
         }
 
