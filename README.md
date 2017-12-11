@@ -22,8 +22,8 @@ $condition - степень сжатия. 0 - сжимать полностью,
 
 Пути работают относительно алиаса @webroot. Поменять алиас можно с так: <br>
 <pre>
-	$conf = PathHelper::getInstance();
-	$conf->setAlias('@webroot');
+$conf = PathHelper::getInstance();
+$conf->setAlias('@webroot');
 </pre>
 Менять нужно перед инициализацей компрессора!!!
 
