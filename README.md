@@ -7,10 +7,11 @@
 уже вполне работоспасобна.
 
 Использование:<br>
-<code>use doris\compressor\Compressor;</code>
+<pre>use doris\compressor\Compressor;
 	
-<code>$comp = new Compressor();</code><br>
-<code>$image_path = $comp->compress($image, $path, $condition);</code>
+$comp = new Compressor();
+$image_path = $comp->compress($image, $path, $condition);
+</pre>
 
 Параметры:<br>
 $image - путь к картинке, не абсолютный ('/images/test.jpg'). Обязательно <br>
@@ -20,12 +21,16 @@ $condition - степень сжатия. 0 - сжимать полностью,
 Возвращает валидный путь для подключения на сайте.
 
 Пути работают относительно алиаса @webroot. Поменять алиас можно с так: <br>
-<code>$comp->setAlias('@root')</code>
+<pre>
+	$conf = PathHelper::getInstance();
+	$conf->setAlias('@webroot');
+</pre>
+Менять нужно перед инициализацей компрессора!!!
 
 В params необходимо положить следующие настройки:<br>
 <pre>
 'ImageCompressor' => [
-      'key' => $key,
-      'domain' => $serve_domain
+      'key' => "Ключ для текущего сайта",
+      'domain' => "Домен на который будет отправлятся запрос"
 ]
 </pre>

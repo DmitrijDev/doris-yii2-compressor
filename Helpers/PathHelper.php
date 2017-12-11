@@ -8,6 +8,7 @@ class PathHelper
 {
 
     private $alias = '@webroot/';
+    private static $_instance = null;
     public $name; // file name
     public $dirPath; // path to directory with file
     public $filePathToGet; // full path with file to get
@@ -16,30 +17,46 @@ class PathHelper
 
     public function setAlias($alias)
     {
-        $this->alias = $alias;
+        self::$_instance->alias = $alias;
     }
 
     public function setData($img, $path = false)
     {
         $tmp = explode('/', $img);
-        $this->name = end($tmp);
+        self::$_instance->name = end($tmp);
 
         if ($path) {
-            $this->dirPath = Yii::getAlias($this->alias . $path);
-            $this->returnPath = $path . '/' . $this->name;
+            self::$_instance->dirPath = Yii::getAlias(self::$_instance->alias . $path);
+            self::$_instance->returnPath = $path . '/' . self::$_instance->name;
 
-            if (!file_exists($this->dirPath)) {
-                mkdir($this->dirPath, 0775, true);
+            if (!file_exists(self::$_instance->dirPath)) {
+                mkdir(self::$_instance->dirPath, 0775, true);
             }
         } else {
             array_pop($tmp);
             $tmp = implode('/', $tmp);
 
-            $this->dirPath = Yii::getAlias($this->alias . $tmp);
-            $this->returnPath = $img;
+            self::$_instance->dirPath = Yii::getAlias(self::$_instance->alias . $tmp);
+            self::$_instance->returnPath = $img;
         }
 
-        $this->filePathToGet = Yii::getAlias('@webroot') . $img;
-        $this->filePathToSet = $this->dirPath . '/' . $this->name;
+        self::$_instance->filePathToGet = Yii::getAlias('@webroot') . $img;
+        self::$_instance->filePathToSet = self::$_instance->dirPath . '/' . self::$_instance->name;
+    }
+
+    private function __construct()
+    {
+    }
+
+    protected function __clone()
+    {
+    }
+
+    static public function getInstance()
+    {
+        if (is_null(self::$_instance)) {
+            self::$_instance = new self();
+        }
+        return self::$_instance;
     }
 }

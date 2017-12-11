@@ -12,17 +12,12 @@ use doris\compressor\Services\RequestService;
 class Compressor extends Component
 {
 
-    private $pathHelper;
-
-    public function init()
-    {
-        $this->pathHelper = new PathHelper();
-    }
-
     public function compress($img, $path = false, $condition = null)
     {
-        $this->pathHelper->setData($img, $path);
-        $config = ConfigHelper::getParams($this->pathHelper, $condition);
+        $pathHelper = PathHelper::getInstance();
+        $pathHelper->setData($img, $path);
+
+        $config = ConfigHelper::getParams($condition);
 
         if ($path) {
             if (file_exists($this->pathHelper->filePathToSet)) {
@@ -38,18 +33,13 @@ class Compressor extends Component
         }
 
         if (!$path) {
-            file_put_contents($this->pathHelper->filePathToSet, $image);
+            file_put_contents($pathHelper->filePathToSet, $image);
             return $img;
         }
 
-        file_put_contents($this->pathHelper->filePathToSet, $image);
+        file_put_contents($pathHelper->filePathToSet, $image);
 
-        return $this->pathHelper->returnPath;
-    }
-
-    public function setAlias($alias)
-    {
-        $this->pathHelper->setAlias($alias);
+        return $pathHelper->returnPath;
     }
 
 }

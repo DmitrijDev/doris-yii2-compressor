@@ -6,8 +6,9 @@ use Yii;
 
 class ConfigHelper
 {
-    public static function getParams($pathHelper, $condition = null)
+    public static function getParams($condition = null)
     {
+        $pathHelper = PathHelper::getInstance();
         $key = Yii::$app->params['ImageCompressor']['key'];
         if (empty($key)) {
             throw new \Exception('Can\'t download site key.');
