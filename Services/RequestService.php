@@ -9,6 +9,11 @@ use doris\compressor\RequestHandlers\ImageHandler;
 
 class RequestService
 {
+	/**
+	 * @param $data array from ConfigHelper::getParams
+	 * @return mixed boolean or base 64 image
+	 * @throws \Exception
+	 */
     public function getCompressed($data)
     {
         $domain = Yii::$app->params['ImageCompressor']['domain'];

@@ -6,6 +6,11 @@ use Yii;
 
 class ConfigHelper
 {
+	/**
+	 * @param int $condition condition of image compress, from 0 to 100
+	 * @return array params to send request
+	 * @throws \Exception
+	 */
     public static function getParams($condition = null)
     {
         $pathHelper = PathHelper::getInstance();

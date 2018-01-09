@@ -12,34 +12,39 @@ use doris\compressor\Services\RequestService;
 class Compressor extends Component
 {
 
-    public function compress($img, $path = false, $condition = null)
-    {
-        $pathHelper = PathHelper::getInstance();
-        $pathHelper->setData($img, $path);
+	/**
+	 * @param string $img path to image with image
+	 * @param string $path path to save image
+	 * @param int $condition condition of image compress, from 0 to 100
+	 * @return mixed path to put image on page
+	 * @throws \Exception
+	 */
+	public function compress($img = null, $path = null, $condition = null)
+	{
+		$pathHelper = PathHelper::getInstance();
 
-        $config = ConfigHelper::getParams($condition);
+		if(!$pathHelper->setData($img, $path)){
+			throw new \Exception("Image param can't be empty.");
+		};
 
-        if ($path) {
-            if (file_exists($pathHelper->filePathToSet)) {
-                return $pathHelper->returnPath;
-            }
-        }
+		$config = ConfigHelper::getParams($condition);
 
-        $request = new RequestService();
-        $image = $request->getCompressed($config);
+		if ($path) {
+			if (file_exists($pathHelper->filePathToSet)) {
+				return $pathHelper->returnPath;
+			}
+		}
 
-        if (!$image) {
-            return $img;
-        }
+		$request = new RequestService();
+		$image = $request->getCompressed($config);
 
-        if (!$path) {
-            file_put_contents($pathHelper->filePathToSet, $image);
-            return $img;
-        }
+		if (!$image) {
+			return $img;
+		}
 
-        file_put_contents($pathHelper->filePathToSet, $image);
+		file_put_contents($pathHelper->filePathToSet, $image);
 
-        return $pathHelper->returnPath;
-    }
+		return $pathHelper->returnPath;
+	}
 
 }

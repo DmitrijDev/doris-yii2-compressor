@@ -2,10 +2,17 @@
 
 namespace doris\compressor\Helpers;
 
+use doris\compressor\RequestHandlers\ImageHandler;
 use Yii;
 
 class RequestHelper
 {
+	/**
+	 * @param string $request request from server (image)
+	 * @param array $headers global array
+	 * @param ImageHandler $handler
+	 * @return mixed false or path to save
+	 */
     public static function prepareData($request, $headers, $handler)
     {
         $tmp = explode(' ', $headers[0]);
