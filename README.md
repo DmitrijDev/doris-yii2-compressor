@@ -40,13 +40,13 @@ $conf->setAlias('@webroot');
 Если есть желание использовать библиотеку с консоли стоит зарегистрировать модуль в <code>console/config/main</code>
 <pre>
 'modules' => [
-		'compressor' => 'doris\compressor\console\Console',
-	],
+	'compressor' => 'doris\compressor\console\Console',
+],
 </pre>
 
 Команда для сжатия картинок через консоль:
 <pre>
-	yii compressor $path $recursive
+yii compressor $path $recursive
 </pre>
 
 Параметры:
