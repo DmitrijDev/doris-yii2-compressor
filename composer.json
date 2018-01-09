@@ -1,16 +1,18 @@
 {
     "name": "doris/yii2-compressor",
     "description": "library for compress images by doris api",
-    "type": "library",
+    "homepage": "https://github.com/DmitrijDev/doris-yii2-compressor",
+    "type": "yii2-extension",
     "license": "MIT",
     "authors": [
         {
             "name": "Dmitrij K.",
-            "email": "gitarheero@mail.ru"
+            "email": "d.develop@protonmail.com"
         }
     ],
     "minimum-stability": "dev",
     "require": {
+        "yiisoft/yii2": "*",
         "php": ">=5.5.0"
     },
     "autoload": {
