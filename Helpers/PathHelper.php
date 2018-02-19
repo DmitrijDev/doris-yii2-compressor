@@ -31,7 +31,7 @@ class PathHelper
 			return false;
 		}
 
-		$tmp = explode('/', $img);
+        $tmp = explode('\\', $img);
 		self::$_instance->name = end($tmp);
 
 		if ($path) {
@@ -51,6 +51,8 @@ class PathHelper
 
 		self::$_instance->filePathToGet = Yii::getAlias('@webroot') . $img;
 		self::$_instance->filePathToSet = self::$_instance->dirPath . '/' . self::$_instance->name;
+
+		echo(self::$_instance);die();
 
 		return true;
 	}
