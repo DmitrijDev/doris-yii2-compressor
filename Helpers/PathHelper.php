@@ -52,8 +52,6 @@ class PathHelper
 		self::$_instance->filePathToGet = Yii::getAlias('@webroot') . $img;
 		self::$_instance->filePathToSet = self::$_instance->dirPath . '/' . self::$_instance->name;
 
-		echo(self::$_instance);die();
-
 		return true;
 	}
 
