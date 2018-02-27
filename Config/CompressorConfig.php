@@ -10,6 +10,8 @@ use Yii;
  * @property string $image path to image with image name
  * @property int $condition condition of image compress (from 0 to 100)
  * @property boolean $generateName generate new image name if true
+ * @property string $pathToSave path to dir where need to save image
+ * @property boolean $deleteOriginal delete original image after successful compressing
  *
  * @property string $imageDir
  * @property string $imageName
@@ -26,46 +28,60 @@ use Yii;
  */
 class CompressorConfig
 {
+    /**
+     * User can set this options
+     */
     private $image;
     private $condition = 85;
     private $generateName = false;
+    private $pathToSave;
+    private $deleteOriginal = false;
+    private $alias = '@webroot';
 
+    /**
+     * It's generated options
+     */
     private $imageDir;
     private $imageName;
     private $imageType;
-
-    private $alias = '@webroot';
     private $returnPath;
     private $filePathToGet;
     private $filePathToSet;
 
+    /**
+     * This options should be in config file
+     */
     private $key;
     private $domain;
 
     private static $_instance = null;
 
-    // TODO: write getters to all options
+    // TODO: maybe initConfig may be called here
     public function __get($property)
     {
         switch ($property) {
-            case 'name':
-                return $this->name;
-            case 'condition':
-                return $this->condition;
-            case 'alias':
-                return $this->alias;
+            case 'imageDir':
+                return $this->imageDir;
+            case 'imageName':
+                return $this->imageName;
+            case 'imageType':
+                return $this->imageType;
+            case 'returnPath':
+                return $this->returnPath;
+            case 'filePathToGet':
+                return $this->filePathToGet;
+            case 'filePathToSet':
+                return $this->filePathToSet;
             default:
                 throw new Exception("Property with name {$property} doesn't exist or can't be get");
         }
     }
 
-    // TODO: write validation function for setters
-    // TODO: write setters to all options
     public function __set($property, $value)
     {
         switch ($property) {
-            case 'name':
-                $this->name = $value;
+            case 'image':
+                $this->image = $value;
                 break;
             case 'condition':
                 $this->condition = $value;
@@ -73,14 +89,37 @@ class CompressorConfig
             case 'alias':
                 $this->alias = $value;
                 break;
+            case 'generateName':
+                $this->generateName = $value;
+                break;
+            case 'pathToSave':
+                $this->pathToSave = $value;
+                break;
+            case 'deleteOriginal':
+                $this->deleteOriginal = $value;
+                break;
             default:
                 throw new Exception("Property with name {$property} doesn't exist or can't be set");
         }
     }
 
-    // TODO: write code for generation path and image properties (use fabric method)
-    public function initConfig(){
+    public function initConfig()
+    {
+        if (!$this->validate()) {
+            return;
+        }
 
+        if($this->pathToSave){
+            $this->generateNewPathConfig();
+        } else{
+            $this->generateOldPathConfig();
+        }
+    }
+
+    // TODO: write validation code here
+    public function validate()
+    {
+        return true;
     }
 
     private function __construct()
@@ -94,6 +133,16 @@ class CompressorConfig
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
+    }
+
+    private function generateNewPathConfig()
+    {
+
+    }
+
+    private function generateOldPathConfig()
+    {
+
     }
 
     protected function __clone()
