@@ -2,49 +2,44 @@
 
 namespace doris\compressor;
 
-use Yii;
+use Tinify\Exception;
 use yii\base\Component;
 
-use doris\compressor\Helpers\PathHelper;
-use doris\compressor\Helpers\ConfigHelper;
+use doris\compressor\Config\CompressorConfig;
 use doris\compressor\Services\RequestService;
 
 class Compressor extends Component
 {
+    public static function compress(CompressorConfig $config): string
+    {
+        try {
 
-	/**
-	 * @param string $img path to image with image
-	 * @param string $path path to save image
-	 * @param int $condition condition of image compress, from 0 to 100
-	 * @return mixed path to put image on page
-	 * @throws \Exception
-	 */
-	public function compress($img = null, $path = null, $condition = null)
-	{
-		$pathHelper = PathHelper::getInstance();
+            $config->initConfig();
 
-		if(!$pathHelper->setData($img, $path)){
-			throw new \Exception("Image param can't be empty.");
-		};
+            if ($config->pathToSave) {
+                if (file_exists($config->filePathToSet)) {
+                    return $config->returnPath;
+                }
+            }
 
-		$config = ConfigHelper::getParams($condition);
+            $request = new RequestService();
+            $image = $request->getCompressed($config);
 
-		if ($path) {
-			if (file_exists($pathHelper->filePathToSet)) {
-				return $pathHelper->returnPath;
-			}
-		}
+            if (!$image) {
+                return $config->returnPath;
+            }
 
-		$request = new RequestService();
-		$image = $request->getCompressed($config);
+            file_put_contents($config->filePathToSet, $image);
 
-		if (!$image) {
-			return $img;
-		}
+            if ($config->pathToSave && $config->deleteOriginal) {
+                unlink($config->filePathToGet);
+            }
 
-		file_put_contents($pathHelper->filePathToSet, $image);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
 
-		return $pathHelper->returnPath;
-	}
+        return $config->returnPath;
+    }
 
 }

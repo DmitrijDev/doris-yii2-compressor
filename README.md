@@ -9,16 +9,20 @@
 Использование:<br>
 <pre>use doris\compressor\Compressor;
 	
-$comp = new Compressor();
-$image_path = $comp->compress($pathToImage, $pathToSave, $condition);
+$config = new CompressorConfig();
+$config->image = '/images/test.png';
+        
+$pathToImage = Compressor::compress($config);
 </pre>
 
-Параметры:<br>
+$config - объект класса CompressorConfig. Возможно установить следующие параметры:
 <ul>
-<li>$pathToImage - путь к картинке, не абсолютный ('\images\test.jpg'). <strong>Важно!</strong> 
-Передавать нужно не ссылку на картинку, а путь через обратный слеш. Обязательно. </li>
-<li>$pathToSave - путь куда положить картинку ('uploads\images'). Опционально. </li>
-<li>$condition - степень сжатия. 0 - сжимать полностью, 100 - не сжимать. По умолчанию 85. Опционально. </li>
+	<li> image: string - путь к картинке относительно алиаса ('/images/test.png). Обязательно. </li>
+	<li> alias: string - установка алиаса ('@web'). Опционально. По умолчанию '@web'. </li>
+	<li> condition: int - степень сжатия. Опционально. По умолчанию 85. </li>
+	<li> pathToSave: string - путь к папке в которую будет сохранена картинка относительно алиаса ('uploads/products'). Опционально. Если задан не будет - картинка перезапишется. </li>
+	<li> customName: string - присвоит созданной картинке переданое имя (к примеру 'test'). Опционально. Будет работать только если задан параметр pathToSave. </li>
+	<li> deleteOriginal: bool - удалит оригинал в случае успешного сжатия. Опционально. Будет работать только если задан параметр pathToSave. По молчанию false. </li>
 </ul>
 
 Возвращает валидный путь для подключения на сайте.

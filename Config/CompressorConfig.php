@@ -7,14 +7,21 @@ use Yii;
 
 /**
  * Class CompressorConfig
+ * @property string $image path to image with image name
+ * @property int $condition condition of image compress (from 0 to 100)
+ * @property string $customName set custom name after save
+ * @property string $pathToSave path to dir where need to save image
+ * @property boolean $deleteOriginal delete original image after successful compressing
  *
  * @property string $imageDir
  * @property string $imageName
  * @property string $imageType
+ * @property string $imageContent
  *
  * @property string $filePathToGet
  * @property string $filePathToSet
  * @property string $returnPath
+ * @property string $alias
  *
  * @property string $key
  * @property string $domain
@@ -23,12 +30,23 @@ use Yii;
 class CompressorConfig
 {
     /**
+     * User can set this options
+     */
+    public $image;
+    public $alias = '@webroot';
+    public $condition = 85;
+    public $pathToSave;
+    public $customName;
+    public $deleteOriginal = false;
+
+    /**
      * It's generated options
      */
     private $imageDir;
     private $imageName;
     private $imageType;
     private $returnPath;
+    private $imageContent;
     private $filePathToGet;
     private $filePathToSet;
 
@@ -38,13 +56,68 @@ class CompressorConfig
     private $key;
     private $domain;
 
-    private static $_instance = null;
+    public function __get(string $property)
+    {
+        switch ($property) {
+            case 'imageDir':
+                return $this->imageDir;
+            case 'imageName':
+                return $this->imageName;
+            case 'imageType':
+                return $this->imageType;
+            case 'returnPath':
+                return $this->returnPath;
+            case 'filePathToGet':
+                return $this->filePathToGet;
+            case 'filePathToSet':
+                return $this->filePathToSet;
+            case 'imageContent':
+                return $this->imageContent;
+            case 'key' :
+                return $this->key;
+            case 'domain' :
+                return $this->domain;
+            default:
+                throw new Exception("Property with name {$property} doesn't exist or can't be getted");
+        }
+    }
+
+    public function getConfigForRequest(): array
+    {
+        return [
+            'file' => $this->imageContent,
+            'key' => $this->key,
+            'ext' => $this->imageType,
+            'condition' => $this->condition
+        ];
+    }
 
     public function initConfig()
     {
+        $this->validate();
+
+        $imageProperties = pathinfo($this->image);
+
+        $this->imageDir = str_replace('/', '\\', $imageProperties['dirname']);
+        $this->imageName = $imageProperties['filename'];
+        $this->imageType = $imageProperties['extension'];
+
+        if (empty($this->pathToSave)) {
+            $this->generatePathToOverwrite();
+        } else {
+            $this->generatePathToSave();
+        }
+
+        $this->imageContent = file_get_contents($this->filePathToGet);
     }
 
-    private function __construct()
+    private function validate(): bool
+    {
+        // TODO:: need validate data here. Generate exception if find invalid property
+        return true;
+    }
+
+    public function __construct()
     {
         try {
             $configs = Yii::$app->params['ImageCompressor'];
@@ -57,16 +130,20 @@ class CompressorConfig
         }
     }
 
-
-    protected function __clone()
+    private function generatePathToSave()
     {
+        $imageName = $this->customName ? $this->customName : $this->imageName;
+
+        $this->pathToSave = str_replace('/', '\\', $this->pathToSave);
+        $this->filePathToGet = Yii::getAlias($this->alias) . '\\' . $this->imageDir . '\\' . $this->imageName . '.' . $this->imageType;
+        $this->filePathToSet = Yii::getAlias($this->alias) . '\\' . $this->pathToSave . '\\' . $imageName . '.' . $this->imageType;
+        $this->returnPath = $this->pathToSave . '\\' . $imageName . '.' . $this->imageType;
     }
 
-    static public function getInstance()
+    private function generatePathToOverwrite()
     {
-        if (is_null(self::$_instance)) {
-            self::$_instance = new self();
-        }
-        return self::$_instance;
+        $this->filePathToGet = Yii::getAlias($this->alias) . '\\' . $this->imageDir . '\\' . $this->imageName . '.' . $this->imageType;
+        $this->filePathToSet = Yii::getAlias($this->alias) . '\\' . $this->imageDir . '\\' . $this->imageName . '.' . $this->imageType;
+        $this->returnPath = $this->imageDir . '\\' . $this->imageName . '.' . $this->imageType;
     }
 }
