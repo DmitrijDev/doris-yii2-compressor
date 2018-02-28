@@ -10,41 +10,43 @@ use yii\helpers\FileHelper;
 
 class CompressController extends Controller
 {
-	private $frontend = '.\frontend\web';
+    private $frontend = '.\frontend\web';
 
-	public function actionIndex($path = null, $recursive = true)
-	{
-		$dir = $this->frontend . $path;
-		if (!$path || !file_exists($dir)) {
-			$this->pushMessage("Directory {$dir} not exist");
-			return;
-		}
+    public function actionIndex($path = null, $recursive = true)
+    {
+        $dir = $this->frontend . $path;
+        if (!$path || !file_exists($dir)) {
+            $this->pushMessage("Directory {$dir} not exist");
+            return;
+        }
 
-		$this->pushMessage("Start compressing... \n");
-		Yii::setAlias('@web', $this->frontend);
-		Yii::setAlias('@webroot', $this->frontend);
+        $this->pushMessage("Start compressing... \n");
+        Yii::setAlias('@web', $this->frontend);
+        Yii::setAlias('@webroot', $this->frontend);
 
-		$collection = FileHelper::findFiles($dir, [
-			'only' => ['*.png', '*.jpg'],
-			'recursive' => filter_var($recursive, FILTER_VALIDATE_BOOLEAN)
-		]);
+        $collection = FileHelper::findFiles($dir, [
+            'only' => ['*.png', '*.jpg'],
+            'recursive' => filter_var($recursive, FILTER_VALIDATE_BOOLEAN)
+        ]);
 
-		foreach ($collection as $image) {
-			$config = new CompressorConfig();
-			$config->imagePath = $image;
+        foreach ($collection as $image) {
+            $image = str_replace($this->frontend, '', $image);
 
-			Compressor::compress($config);
+            $config = new CompressorConfig();
+            $config->imagePath = $image;
 
-			$this->pushMessage("Image {$image} is now compressed \n");
-		}
+            Compressor::compress($config);
 
-		$count_of_files = count($collection);
+            $this->pushMessage("Image {$image} is now compressed \n");
+        }
 
-		$this->pushMessage("Finish. Compressed {$count_of_files} files.");
-	}
+        $count_of_files = count($collection);
 
-	private function pushMessage($message = '')
-	{
-		echo $message;
-	}
+        $this->pushMessage("Finish. Compressed {$count_of_files} files.");
+    }
+
+    private function pushMessage($message = '')
+    {
+        echo $message;
+    }
 }
