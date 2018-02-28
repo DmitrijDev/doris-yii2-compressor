@@ -10,6 +10,10 @@ use doris\compressor\Services\RequestService;
 
 class Compressor extends Component
 {
+    /**
+     * @param CompressorConfig $config
+     * @return string
+     */
     public static function compress(CompressorConfig $config): string
     {
         try {

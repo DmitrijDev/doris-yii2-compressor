@@ -3,6 +3,7 @@
 namespace doris\compressor\console;
 
 use doris\compressor\Compressor;
+use doris\compressor\Config\CompressorConfig;
 use Yii;
 use yii\console\Controller;
 use yii\helpers\FileHelper;
@@ -28,11 +29,12 @@ class CompressController extends Controller
 			'recursive' => filter_var($recursive, FILTER_VALIDATE_BOOLEAN)
 		]);
 
-		$comp = new Compressor();
 		foreach ($collection as $image) {
-			$file = str_replace($this->frontend, '', $image);
+			$config = new CompressorConfig();
+			$config->image = $image;
 
-			$comp->compress($file);
+			Compressor::compress($config);
+
 			$this->pushMessage("Image {$image} is now compressed \n");
 		}
 
