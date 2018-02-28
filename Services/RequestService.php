@@ -2,38 +2,29 @@
 
 namespace doris\compressor\Services;
 
-use Yii;
-
+use doris\compressor\Adapters\RequestAdapter;
 use doris\compressor\Helpers\RequestHelper;
+use doris\compressor\Config\CompressorConfig;
 use doris\compressor\RequestHandlers\ImageHandler;
 
 class RequestService
 {
-	/**
-	 * @param $data array from ConfigHelper::getParams
-	 * @return mixed boolean or base 64 image
-	 * @throws \Exception
-	 */
-    public function getCompressed($data)
-    {
-        $domain = Yii::$app->params['ImageCompressor']['domain'];
-        $method = '/image';
 
-        if (empty($domain)) {
-            throw new \Exception('Can\'t download site domain.');
-        }
+    public function getCompressed(CompressorConfig $config)
+    {
+        $method = '/image';
 
         $options = array(
             'http' => array(
                 'method' => 'POST',
-                'content' => http_build_query($data),
+                'content' => http_build_query(RequestAdapter::getConfigForRequest($config)),
                 'ignore_errors' => true,
                 'header' => "Content-Type: application/x-www-form-urlencoded"
             )
         );
 
         $context = stream_context_create($options);
-        $request = file_get_contents($domain . $method, false, $context);
+        $request = file_get_contents($config->domain . $method, false, $context);
 
         $handler = new ImageHandler();
 
