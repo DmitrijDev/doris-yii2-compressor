@@ -113,7 +113,31 @@ class CompressorConfig
 
     private function validate(): bool
     {
-        // TODO:: need validate data here. Generate exception if find invalid property
+        // Very simple solution for validation (maybe need review)
+        if (gettype($this->deleteOriginal) != 'boolean') {
+            throw new Exception('DeleteOriginal option must be boolean');
+        }
+
+        if (empty($this->alias) || gettype($this->alias) != 'string') {
+            throw new Exception('Alias option must be string');
+        }
+
+        if (empty($this->conditionRatio) || gettype($this->conditionRatio) != 'integer') {
+            throw new Exception('ConditionRatio option must be integer');
+        }
+
+        if (empty($this->imagePath) || gettype($this->imagePath) != 'string') {
+            throw new Exception('ImagePath option must be string');
+        }
+
+        if (gettype($this->pathToSave) != 'string' && !empty($this->pathToSave)) {
+            throw new Exception('PathToSave option must be string');
+        }
+
+        if (gettype($this->customName) != 'string' && !empty($this->customName)) {
+            throw new Exception('CustomName option must be string');
+        }
+
         return true;
     }
 
