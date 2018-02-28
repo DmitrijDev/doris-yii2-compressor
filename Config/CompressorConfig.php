@@ -7,11 +7,12 @@ use Yii;
 
 /**
  * Class CompressorConfig
- * @property string $image path to image with image name
- * @property int $condition condition of image compress (from 0 to 100)
+ * @property string $imagePath path to image with image name
+ * @property int $conditionRatio condition of image compress (from 0 to 100)
  * @property string $customName set custom name after save
  * @property string $pathToSave path to dir where need to save image
  * @property boolean $deleteOriginal delete original image after successful compressing
+ * @property string $alias
  *
  * @property string $imageDir
  * @property string $imageName
@@ -21,7 +22,6 @@ use Yii;
  * @property string $filePathToGet
  * @property string $filePathToSet
  * @property string $returnPath
- * @property string $alias
  *
  * @property string $key
  * @property string $domain
@@ -32,9 +32,9 @@ class CompressorConfig
     /**
      * User can set this options
      */
-    public $image;
     public $alias = '@webroot';
-    public $condition = 85;
+    public $conditionRatio = 85;
+    public $imagePath;
     public $pathToSave;
     public $customName;
     public $deleteOriginal = false;
@@ -88,7 +88,7 @@ class CompressorConfig
             'file' => $this->imageContent,
             'key' => $this->key,
             'ext' => $this->imageType,
-            'condition' => $this->condition
+            'condition' => $this->conditionRatio
         ];
     }
 
@@ -96,7 +96,7 @@ class CompressorConfig
     {
         $this->validate();
 
-        $imageProperties = pathinfo($this->image);
+        $imageProperties = pathinfo($this->imagePath);
 
         $this->imageDir = str_replace('/', '\\', $imageProperties['dirname']);
         $this->imageName = $imageProperties['filename'];

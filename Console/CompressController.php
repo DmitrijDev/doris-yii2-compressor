@@ -31,7 +31,7 @@ class CompressController extends Controller
 
 		foreach ($collection as $image) {
 			$config = new CompressorConfig();
-			$config->image = $image;
+			$config->imagePath = $image;
 
 			Compressor::compress($config);
 
