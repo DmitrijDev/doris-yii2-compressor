@@ -13,6 +13,7 @@ class Compressor extends Component
     /**
      * @param CompressorConfig $config
      * @return string
+     * @throws Exception
      */
     public static function compress(CompressorConfig $config): string
     {

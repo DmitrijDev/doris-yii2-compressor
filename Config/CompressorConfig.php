@@ -21,6 +21,7 @@ use Yii;
  *
  * @property string $filePathToGet
  * @property string $filePathToSet
+ * @property string $dirToFileSet
  * @property string $returnPath
  *
  * @property string $key
@@ -49,6 +50,8 @@ class CompressorConfig
     private $imageContent;
     private $filePathToGet;
     private $filePathToSet;
+    private $dirToFileSet;
+
 
     /**
      * This options should be in config file
@@ -77,6 +80,8 @@ class CompressorConfig
                 return $this->key;
             case 'domain' :
                 return $this->domain;
+            case 'dirToFileSet' :
+                return $this->dirToFileSet;
             default:
                 throw new Exception("Property with name {$property} doesn't exist or can't be getted");
         }
@@ -161,6 +166,7 @@ class CompressorConfig
         $this->pathToSave = str_replace('/', '\\', $this->pathToSave);
         $this->filePathToGet = Yii::getAlias($this->alias) . '\\' . $this->imageDir . '\\' . $this->imageName . '.' . $this->imageType;
         $this->filePathToSet = Yii::getAlias($this->alias) . '\\' . $this->pathToSave . '\\' . $imageName . '.' . $this->imageType;
+        $this->dirToFileSet = Yii::getAlias($this->alias) . '\\' . $this->pathToSave;
         $this->returnPath = $this->pathToSave . '\\' . $imageName . '.' . $this->imageType;
     }
 
@@ -168,6 +174,7 @@ class CompressorConfig
     {
         $this->filePathToGet = Yii::getAlias($this->alias) . '\\' . $this->imageDir . '\\' . $this->imageName . '.' . $this->imageType;
         $this->filePathToSet = Yii::getAlias($this->alias) . '\\' . $this->imageDir . '\\' . $this->imageName . '.' . $this->imageType;
+        $this->dirToFileSet = Yii::getAlias($this->alias) . '\\' . $this->imageDir;
         $this->returnPath = $this->imageDir . '\\' . $this->imageName . '.' . $this->imageType;
     }
 }
