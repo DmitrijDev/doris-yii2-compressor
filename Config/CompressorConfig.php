@@ -87,16 +87,6 @@ class CompressorConfig
         }
     }
 
-    public function getConfigForRequest(): array
-    {
-        return [
-            'file' => $this->imageContent,
-            'key' => $this->key,
-            'ext' => $this->imageType,
-            'condition' => $this->conditionRatio
-        ];
-    }
-
     public function initConfig()
     {
         $this->validate();
