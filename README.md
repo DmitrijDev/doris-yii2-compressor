@@ -10,14 +10,14 @@
 <pre>use doris\compressor\Compressor;
 	
 $comp = new Compressor();
-$image_path = $comp->compress($image, $path, $condition);
+$image_path = $comp->compress($pathToImage, $pathToSave, $condition);
 </pre>
 
 Параметры:<br>
 <ul>
-<li>$image - путь к картинке, не абсолютный ('\images\test.jpg'). <strong>Важно!</strong> 
+<li>$pathToImage - путь к картинке, не абсолютный ('\images\test.jpg'). <strong>Важно!</strong> 
 Передавать нужно не ссылку на картинку, а путь через обратный слеш. Обязательно. </li>
-<li>$path - путь куда положить картинку ('uploads/images'). Опционально. </li>
+<li>$pathToSave - путь куда положить картинку ('uploads\images'). Опционально. </li>
 <li>$condition - степень сжатия. 0 - сжимать полностью, 100 - не сжимать. По умолчанию 85. Опционально. </li>
 </ul>
 
