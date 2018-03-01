@@ -26,9 +26,8 @@ class RequestService
         $context = stream_context_create($options);
         $request = file_get_contents($config->domain . $method, false, $context);
 
-        $handler = new ImageHandler();
 
-        return RequestHelper::prepareData($request, $http_response_header, $handler);
+        return RequestHelper::prepareData($request, $http_response_header);
     }
 
 }
