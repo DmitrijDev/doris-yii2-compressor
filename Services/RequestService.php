@@ -1,33 +1,73 @@
 <?php
+namespace doris\compressor\services;
 
-namespace doris\compressor\Services;
+use Yii;
 
-use doris\compressor\Adapters\RequestAdapter;
-use doris\compressor\Helpers\RequestHelper;
-use doris\compressor\Config\CompressorConfig;
-use doris\compressor\RequestHandlers\ImageHandler;
-
+/**
+ * Class RequestService
+ */
 class RequestService
 {
+    public $conditionRatio = 85;
 
-    public function getCompressed(CompressorConfig $config)
+    private $key;
+    private $domain;
+
+    private $request;
+    private $http_response_header;
+
+    const STATUS_OK = 'OK';
+
+    public function __construct()
     {
-        $method = '/image';
+        $configs = Yii::$app->params['ImageCompressor'];
 
-        $options = array(
-            'http' => array(
-                'method' => 'POST',
-                'content' => http_build_query(RequestAdapter::getConfigForRequest($config)),
-                'ignore_errors' => true,
-                'header' => "Content-Type: application/x-www-form-urlencoded"
-            )
-        );
-
-        $context = stream_context_create($options);
-        $request = file_get_contents($config->domain . $method, false, $context);
-
-
-        return RequestHelper::prepareData($request, $http_response_header);
+        $this->key = $configs['key'];
+        $this->domain = $configs['domain'];
     }
 
+    public function sendRequest(string $imageExt, string $imageContent): bool
+    {
+        $method = '/image';
+        $requestData = $this->prepareDataForRequest($imageExt, $imageContent);
+
+        $options = [
+            'http' => [
+                'method' => 'POST',
+                'content' => http_build_query($requestData),
+                'ignore_errors' => true,
+                'header' => "Content-Type: application/x-www-form-urlencoded"
+            ]
+        ];
+
+        $context = stream_context_create($options);
+        $request = file_get_contents($this->domain . $method, false, $context);
+
+        $this->request = $request;
+        $this->http_response_header = $http_response_header;
+
+        return $this->checkResponseStatus();
+    }
+
+    protected function prepareDataForRequest(string $imageExt, string $imageContent): array
+    {
+        return [
+            'file' => $imageContent,
+            'key' => $this->key,
+            'ext' => $imageExt,
+            'condition' => $this->conditionRatio
+        ];
+    }
+
+    protected function checkResponseStatus(): bool
+    {
+        $status = explode(' ', $this->http_response_header[0]);
+
+        return end($status) === self::STATUS_OK;
+    }
+
+    public function getResponse(): string
+    {
+        return $this->request;
+    }
 }

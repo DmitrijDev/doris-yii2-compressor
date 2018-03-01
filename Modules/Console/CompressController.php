@@ -1,9 +1,8 @@
 <?php
 
-namespace doris\compressor\console;
+namespace doris\compressor\modules\console;
 
-use doris\compressor\Compressor;
-use doris\compressor\Config\CompressorConfig;
+use doris\compressor\CompressorFacade;
 use Yii;
 use yii\console\Controller;
 use yii\helpers\FileHelper;
@@ -29,15 +28,18 @@ class CompressController extends Controller
             'recursive' => filter_var($recursive, FILTER_VALIDATE_BOOLEAN)
         ]);
 
+        $compressor = new CompressorFacade();
         foreach ($collection as $image) {
             $image = str_replace($this->frontend, '', $image);
 
-            $config = new CompressorConfig();
-            $config->imagePath = $image;
+            $compressor->setPathToImage($image);
 
-            Compressor::compress($config);
+            if($compressor->compress()){
+                $this->pushMessage("Image {$image} is now compressed \n");
+                continue;
+            }
 
-            $this->pushMessage("Image {$image} is now compressed \n");
+            $this->pushMessage($compressor->getErrorMessage());
         }
 
         $count_of_files = count($collection);
