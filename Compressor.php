@@ -21,10 +21,8 @@ class Compressor extends Component
 
             $config->initConfig();
 
-            if ($config->pathToSave) {
-                if (file_exists($config->filePathToSet)) {
-                    return $config->returnPath;
-                }
+            if (self::imageExist($config)) {
+                return $config->returnPath;
             }
 
             $request = new RequestService();
@@ -47,4 +45,8 @@ class Compressor extends Component
         return $config->returnPath;
     }
 
+    private static function imageExist(CompressorConfig $config)
+    {
+        return $config->pathToSave && file_exists($config->filePathToSet);
+    }
 }
