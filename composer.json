@@ -10,7 +10,8 @@
             "email": "d.develop@protonmail.com"
         }
     ],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
+    "version": "1.0.0",
     "require": {
         "yiisoft/yii2": "*",
         "php": ">=7.0"
