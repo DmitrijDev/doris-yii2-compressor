@@ -18,10 +18,10 @@
 
 Пример использования:<br>
 <pre>
-use doris\compressor\CompressorFacade;
+use doris\compressor\CompressorApi;
 
 try {
-$compressor = new CompressorFacade();
+$compressor = new CompressorApi();
 $compressor->setPathToImage('/images/test.png')
 	->setPathToSave('/uploads/products')
 	->setAlias('@web')
