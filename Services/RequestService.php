@@ -1,7 +1,8 @@
 <?php
-namespace doris\compressor\services;
+namespace doris\compressor\Services;
 
 use Yii;
+use Exception;
 
 /**
  * Class RequestService
@@ -10,6 +11,8 @@ class RequestService
 {
     private $key;
     private $domain;
+
+    const STATUS_OK = 'OK';
 
     public function __construct()
     {
@@ -34,7 +37,13 @@ class RequestService
         ];
 
         $context = stream_context_create($options);
-        return file_get_contents($this->domain . $method, false, $context);
+        $request = file_get_contents($this->domain . $method, false, $context);
+
+        if (!$this->checkResponseStatus($http_response_header)) {
+            throw new Exception($request);
+        }
+
+        return $request;
     }
 
     protected function prepareDataForRequest(string $imageExt, string $imageContent, int $compressRatio): array
@@ -45,5 +54,12 @@ class RequestService
             'ext' => $imageExt,
             'condition' => $compressRatio
         ];
+    }
+
+    protected function checkResponseStatus($http_response_header): bool
+    {
+        $status = explode(' ', $http_response_header[0]);
+
+        return end($status) === self::STATUS_OK;
     }
 }

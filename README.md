@@ -55,7 +55,7 @@ catch (Exception $e) {
 Если есть желание использовать библиотеку с консоли стоит зарегистрировать модуль в <code>console/config/main</code>
 <pre>
 'modules' => [
-	'compressor' => 'doris\compressor\modules\console\Handler',
+	'compressor' => 'doris\compressor\Modules\Console\Handler',
 ],
 </pre>
 

@@ -1,8 +1,9 @@
 <?php
 namespace doris\compressor;
 
-use doris\compressor\services\FileService;
-use doris\compressor\services\RequestService;
+use Exception;
+use doris\compressor\Services\FileService;
+use doris\compressor\Services\RequestService;
 
 /**
  * Class Facade
@@ -26,9 +27,6 @@ class CompressorApi
         list($imageExt, $imageContent) = $this->fileService->getImageInfo();
 
         $compressedImageContent = $this->requestService->sendRequest($imageExt, $imageContent, $compressRatio);
-        if (!$compressedImageContent) {
-            throw new Exception("Request error");
-        };
 
         $compressedImagePath = $this->fileService->saveImage($compressedImageContent);
         if (!$compressedImagePath) {

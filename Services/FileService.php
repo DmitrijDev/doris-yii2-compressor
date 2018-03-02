@@ -1,7 +1,8 @@
 <?php
-namespace doris\compressor\services;
+namespace doris\compressor\Services;
 
 use Yii;
+use Exception;
 
 class FileService
 {
@@ -19,27 +20,27 @@ class FileService
         $imageName = $this->customName ? $this->customName . '.' . $this->imageExt : $this->imageName . '.' . $this->imageExt;
 
         if ($this->pathToSave) {
-            $pathToSave = Yii::getAlias($this->alias) . '\\' . $this->pathToSave;
-            $returnPath = '\\' . $this->pathToSave . '\\' . $imageName;
+            $pathToSave = Yii::getAlias($this->alias) . '/' . $this->pathToSave;
+            $returnPath = '/' . $this->pathToSave . '/' . $imageName;
         } else {
-            $pathToSave = Yii::getAlias($this->alias) . '\\' . $this->imageDir;
-            $returnPath = '\\' . $this->imageDir . '\\' . $imageName;
+            $pathToSave = Yii::getAlias($this->alias) . '/' . $this->imageDir;
+            $returnPath = '/' . $this->imageDir . '/' . $imageName;
         }
 
         if (!file_exists($pathToSave)) {
             mkdir($pathToSave, 0777, true);
         }
 
-        file_put_contents($pathToSave . '\\' . $imageName, $content);
+        file_put_contents($pathToSave . '/' . $imageName, $content);
 
         return $returnPath;
     }
 
     public function getImageInfo(): array
     {
-        $imagePath = Yii::getAlias($this->alias) . '\\' . $this->imagePath;
+        $imagePath = Yii::getAlias($this->alias) . '/' . $this->imagePath;
         if (!file_exists($imagePath)) {
-            throw new Exception('File not exist');
+            throw new Exception("File {$imagePath} not exist");
         }
 
         $imageProperties = pathinfo($imagePath);
@@ -90,14 +91,11 @@ class FileService
 
     public function deleteOriginal(): bool
     {
-        return unlink($this->alias . '\\' . $this->imagePath);
+        return unlink(Yii::getAlias($this->alias) . '/' . $this->imagePath);
     }
 
     private function getValidPath(string $path): string
     {
-        $path = trim($path, '/');
-        $path = trim($path, '\\');
-
-        return trim(str_replace('/', '\\', $path));
+        return trim($path, '/');
     }
 }
