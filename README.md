@@ -1,5 +1,5 @@
 # Установка и настройка
-<code>composer require doris/yii2-compressor</code>
+<code>composer require doris/yii2-compressor "*"</code>
 
 Для установки ключа и домена в <code>common/config/params</code> необходимо положить следующие настройки:<br>
 <pre>
