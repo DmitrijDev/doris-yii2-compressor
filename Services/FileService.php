@@ -6,65 +6,98 @@ use Yii;
 class FileService
 {
     public $alias = '@webroot';
-    public $imagePath;
     public $pathToSave;
     public $customName;
-    public $deleteOriginal = false;
 
-    private $compressedImagePath;
+    private $imagePath;
+    private $imageDir;
+    private $imageName;
+    private $imageExt;
 
-    public function saveImage(string $content): bool
+    public function saveImage(string $content): string
     {
-        $imageInfo = pathinfo($this->imagePath);
-
-        $imageDir = $imageInfo['dirname'];
-
-        if ($this->customName) {
-            $imageExt = $imageInfo['extension'];
-            $imageName = $this->customName . '.' . $imageExt;
-        } else {
-            $imageName = $imageInfo['basename'];
-        }
+        $imageName = $this->customName ? $this->customName . '.' . $this->imageExt : $this->imageName . '.' . $this->imageExt;
 
         if ($this->pathToSave) {
             $pathToSave = Yii::getAlias($this->alias) . '\\' . $this->pathToSave;
+            $returnPath = '\\' . $this->pathToSave . '\\' . $imageName;
         } else {
-            $pathToSave = Yii::getAlias($this->alias) . '\\' . $imageDir;
+            $pathToSave = Yii::getAlias($this->alias) . '\\' . $this->imageDir;
+            $returnPath = '\\' . $this->imageDir . '\\' . $imageName;
         }
 
         if (!file_exists($pathToSave)) {
             mkdir($pathToSave, 0777, true);
         }
 
-        $this->compressedImagePath = $this->pathToSave . '\\' . $imageName;
-
         file_put_contents($pathToSave . '\\' . $imageName, $content);
 
+        return $returnPath;
+    }
 
-        if ($this->deleteOriginal) {
-            unlink($this->alias . '\\' . $this->imagePath);
+    public function getImageInfo(): array
+    {
+        $imagePath = Yii::getAlias($this->alias) . '\\' . $this->imagePath;
+        if (!file_exists($imagePath)) {
+            throw new Exception('File not exist');
         }
 
-        return true;
+        $imageProperties = pathinfo($imagePath);
+        $this->imageDir = $this->getValidPath($imageProperties['dirname']);
+        $this->imageName = $imageProperties['filename'];
+        $this->imageExt = $imageProperties['extension'];
+
+        $imageContent = file_get_contents($imagePath);
+
+        return [$this->imageExt, $imageContent];
     }
 
-    public function getImageExt(): string
+    public function setPathToImage(string $imagePath)
     {
-        return pathinfo(Yii::getAlias($this->alias) . '\\' . $this->imagePath)['extension'];
+        if (!$imagePath) {
+            throw new Exception("Property pathToSave can't be empty");
+        }
+
+        $this->imagePath = $this->getValidPath($imagePath);
     }
 
-    public function getImageName(): string
+    public function setPathToSave(string $pathToSave)
     {
-        return pathinfo(Yii::getAlias($this->alias) . '\\' . $this->imagePath)['basename'];
+        if (!$pathToSave) {
+            throw new Exception("Property pathToSave can't be empty");
+        }
+
+        $this->pathToSave = $this->getValidPath($pathToSave);
     }
 
-    public function getImageContent(): string
+    public function setCustomName(string $customName)
     {
-        return file_get_contents(Yii::getAlias($this->alias) . '\\' . $this->imagePath);
+        if (!$customName) {
+            throw new Exception("Property customName can't be empty");
+        }
+
+        $this->customName = trim($customName);
     }
 
-    public function getCompressedImagePath(): string
+    public function setAlias(string $alias)
     {
-        return str_replace('\\', '/', $this->compressedImagePath);
+        if (!$alias) {
+            throw new Exception("Property alias can't be empty");
+        }
+
+        $this->alias = trim($alias);
+    }
+
+    public function deleteOriginal(): bool
+    {
+        return unlink($this->alias . '\\' . $this->imagePath);
+    }
+
+    private function getValidPath(string $path): string
+    {
+        $path = trim($path, '/');
+        $path = trim($path, '\\');
+
+        return trim(str_replace('/', '\\', $path));
     }
 }

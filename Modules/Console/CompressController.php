@@ -2,10 +2,11 @@
 
 namespace doris\compressor\modules\console;
 
-use doris\compressor\CompressorFacade;
+use Tinify\Exception;
 use Yii;
 use yii\console\Controller;
 use yii\helpers\FileHelper;
+use doris\compressor\CompressorApi;
 
 class CompressController extends Controller
 {
@@ -28,18 +29,19 @@ class CompressController extends Controller
             'recursive' => filter_var($recursive, FILTER_VALIDATE_BOOLEAN)
         ]);
 
-        $compressor = new CompressorFacade();
-        foreach ($collection as $image) {
-            $image = str_replace($this->frontend, '', $image);
+        try {
+            $compressor = new CompressorApi();
+            foreach ($collection as $image) {
+                $image = str_replace($this->frontend, '', $image);
 
-            $compressor->setPathToImage($image);
+                $compressor->setPathToImage($image);
 
-            if($compressor->compress()){
-                $this->pushMessage("Image {$image} is now compressed \n");
-                continue;
+                if ($compressor->compress()) {
+                    $this->pushMessage("Image {$image} is now compressed \n");
+                }
             }
-
-            $this->pushMessage($compressor->getErrorMessage());
+        } catch (Exception $e) {
+            $this->pushMessage($e->getMessage());
         }
 
         $count_of_files = count($collection);

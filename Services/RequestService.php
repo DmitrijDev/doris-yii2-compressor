@@ -8,15 +8,8 @@ use Yii;
  */
 class RequestService
 {
-    public $conditionRatio = 85;
-
     private $key;
     private $domain;
-
-    private $request;
-    private $http_response_header;
-
-    const STATUS_OK = 'OK';
 
     public function __construct()
     {
@@ -26,10 +19,10 @@ class RequestService
         $this->domain = $configs['domain'];
     }
 
-    public function sendRequest(string $imageExt, string $imageContent): bool
+    public function sendRequest(string $imageExt, string $imageContent, int $compressRatio): string
     {
         $method = '/image';
-        $requestData = $this->prepareDataForRequest($imageExt, $imageContent);
+        $requestData = $this->prepareDataForRequest($imageExt, $imageContent, $compressRatio);
 
         $options = [
             'http' => [
@@ -41,33 +34,16 @@ class RequestService
         ];
 
         $context = stream_context_create($options);
-        $request = file_get_contents($this->domain . $method, false, $context);
-
-        $this->request = $request;
-        $this->http_response_header = $http_response_header;
-
-        return $this->checkResponseStatus();
+        return file_get_contents($this->domain . $method, false, $context);
     }
 
-    protected function prepareDataForRequest(string $imageExt, string $imageContent): array
+    protected function prepareDataForRequest(string $imageExt, string $imageContent, int $compressRatio): array
     {
         return [
             'file' => $imageContent,
             'key' => $this->key,
             'ext' => $imageExt,
-            'condition' => $this->conditionRatio
+            'condition' => $compressRatio
         ];
-    }
-
-    protected function checkResponseStatus(): bool
-    {
-        $status = explode(' ', $this->http_response_header[0]);
-
-        return end($status) === self::STATUS_OK;
-    }
-
-    public function getResponse(): string
-    {
-        return $this->request;
     }
 }
