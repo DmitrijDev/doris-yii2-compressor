@@ -23,7 +23,7 @@ class FileService
             $pathToSave = Yii::getAlias($this->alias) . '/' . $this->pathToSave;
             $returnPath = '/' . $this->pathToSave . '/' . $imageName;
         } else {
-            $pathToSave = Yii::getAlias($this->alias) . '/' . $this->imageDir;
+            $pathToSave = $this->imageDir;
             $returnPath = '/' . $this->imageDir . '/' . $imageName;
         }
 
