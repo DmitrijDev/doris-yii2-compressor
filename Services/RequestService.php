@@ -24,25 +24,27 @@ class RequestService
 
     public function sendRequest(string $imageExt, string $imageContent, int $compressRatio): string
     {
-        $method = '/image';
-        $requestData = $this->prepareDataForRequest($imageExt, $imageContent, $compressRatio);
+        $target_url = $this->domain . '/image';
 
-        $options = [
-            'http' => [
-                'method' => 'POST',
-                'content' => http_build_query($requestData),
-                'ignore_errors' => true,
-                'header' => "Content-Type: application/x-www-form-urlencoded"
-            ]
-        ];
+        $ch = curl_init();
+        curl_setopt_array($ch, array(
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_URL => $target_url,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $this->prepareDataForRequest($imageExt, $imageContent, $compressRatio)
+        ));
+        $request = curl_exec($ch);
 
-        $context = stream_context_create($options);
-        $request = file_get_contents($this->domain . $method, false, $context);
+        if (curl_errno($ch)) {
+            $message = curl_error($ch);
+            curl_close($ch);
 
-        if (!$this->checkResponseStatus($http_response_header)) {
-            throw new Exception($request);
+            throw new Exception($message);
         }
 
+        curl_close($ch);
         return $request;
     }
 

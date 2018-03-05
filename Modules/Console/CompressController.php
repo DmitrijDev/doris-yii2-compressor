@@ -34,6 +34,10 @@ class CompressController extends Controller
         $compressor = new CompressorApi();
         foreach ($collection as $image) {
             $image = str_replace($fronted, '', $image);
+            $image = str_replace('\\', '/', $image);
+            $image = trim($image, '\\');
+            $image = trim($image, '/');
+
 
             $this->compressImage($image, $compressor);
         }
