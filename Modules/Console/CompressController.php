@@ -32,6 +32,9 @@ class CompressController extends Controller
         ]);
 
         $compressor = new CompressorApi();
+
+        $compressed_files_count = 0;
+        $error_files_count = 0;
         foreach ($collection as $image) {
             $image = str_replace($fronted, '', $image);
             $image = str_replace('\\', '/', $image);
@@ -39,13 +42,17 @@ class CompressController extends Controller
             $image = trim($image, '/');
 
 
-            $this->compressImage($image, $compressor);
+            if ($this->compressImage($image, $compressor)) {
+                $compressed_files_count++;
+            } else {
+                $error_files_count++;
+            };
         }
 
 
         $count_of_files = count($collection);
 
-        $this->pushMessage("Finish. Compressed {$count_of_files} files.");
+        $this->pushMessage("\nFinish. Files count {$count_of_files}. \nCompressed files: {$compressed_files_count}. \nError files: {$error_files_count}");
     }
 
     private function compressImage($image, CompressorApi $compressor)
@@ -55,8 +62,10 @@ class CompressController extends Controller
             $compressor->compress();
 
             $this->pushMessage("Image {$image} was compressed");
+            return true;
         } catch (Exception $e) {
             $this->pushMessage($e->getMessage());
+            return false;
         }
     }
 
