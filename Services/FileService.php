@@ -15,6 +15,8 @@ class FileService
     private $imageName;
     private $imageExt;
 
+    private $maxImageSize = 3000000;
+
     public function saveImage(string $content): string
     {
         $imageName = $this->customName ? $this->customName . '.' . $this->imageExt : $this->imageName . '.' . $this->imageExt;
@@ -39,8 +41,13 @@ class FileService
     public function getImageInfo(): array
     {
         $imagePath = Yii::getAlias($this->alias) . '/' . $this->imagePath;
+
         if (!file_exists($imagePath)) {
             throw new Exception("File {$imagePath} not exist");
+        }
+
+        if (filesize($imagePath) > $this->maxImageSize) {
+            throw new Exception("File {$this->imagePath} is too big. Max file size is 3mb.");
         }
 
         $imageProperties = pathinfo($imagePath);
