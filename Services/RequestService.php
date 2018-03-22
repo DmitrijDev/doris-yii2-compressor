@@ -16,10 +16,19 @@ class RequestService
 
     public function __construct()
     {
+        if(!isset(Yii::$app->params['ImageCompressor'])){
+            throw new Exception('ImageCompressor params is empty');
+        }
+
         $configs = Yii::$app->params['ImageCompressor'];
+
+        if(empty($configs['key']) || empty($configs['domain'])){
+            throw new Exception('Key and Domain is required params.');
+        }
 
         $this->key = $configs['key'];
         $this->domain = $configs['domain'];
+
     }
 
     public function sendRequest(string $imageExt, string $imageContent, int $compressRatio): string
